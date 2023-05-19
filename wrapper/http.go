@@ -9,9 +9,7 @@ import (
 )
 
 type SuccessResponse[T any] struct {
-	Data T `json:"data"`
-	// TODO additional properties
-	// AdditionalProperties map[string]any `json:"additionalProperties,omitempty"`
+	Data  T   `json:"data"`
 	Count int `json:"count,omitempty"`
 }
 
