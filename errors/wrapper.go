@@ -18,7 +18,6 @@ func Wrap(err error) error {
 			Type: ValidationErrorType,
 		}
 	}
-	// TODO Дополнять ошибками
 	switch err.(type) {
 	case *url.Error:
 		return &DefaultError{

@@ -30,7 +30,7 @@ func FailedHttpResponse(err error) (int, FailedResponse) {
 }
 
 func (r *FailedResponse) UnmarshalJSON(data []byte) error {
-	validationError := struct{ Error validator.ValidationError }{}
+	validationError := struct{ Error validator.Error }{}
 	err := json.Unmarshal(data, &validationError)
 	if err == nil {
 		r.Error = &validationError.Error
@@ -64,7 +64,7 @@ func getStatusCodeByError(err error) int {
 	switch t := err.(type) {
 	case *errors.DefaultError:
 		errType = t.Type
-	case *validator.ValidationError:
+	case *validator.Error:
 		return http.StatusUnprocessableEntity
 	}
 

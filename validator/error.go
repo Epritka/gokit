@@ -7,26 +7,17 @@ import (
 	"github.com/Epritka/gokit/errors"
 )
 
-type ValidationError struct {
-	Message              string
-	Type                 errors.ErrorType
-	Fields               []Field
-	IsErrorWithoutFields bool
-	Debug                string
+type Error struct {
+	Message string
+	Fields  []Field
+	Debug   string
 }
 
-func (e *ValidationError) Error() string {
+func (e *Error) Error() string {
 	return e.Message
 }
 
-func (e *ValidationError) GetError() error {
-	if len(e.Fields) == 0 && !e.IsErrorWithoutFields {
-		return nil
-	}
-	return e
-}
-
-func (e *ValidationError) AddFieldError(
+func (e *Error) AddFieldError(
 	fieldName string, errorKey errors.ErrorKey,
 ) {
 	e.Fields = append(
@@ -35,7 +26,7 @@ func (e *ValidationError) AddFieldError(
 	)
 }
 
-func (e *ValidationError) AddFieldIndexError(
+func (e *Error) AddFieldIndexError(
 	fieldName string, errorKey errors.ErrorKey, index int,
 ) {
 	e.Fields = append(
@@ -44,7 +35,7 @@ func (e *ValidationError) AddFieldIndexError(
 	)
 }
 
-func (e *ValidationError) AddFieldOptionsError(
+func (e *Error) AddFieldOptionsError(
 	fieldName string, errorKey errors.ErrorKey, options map[string]any,
 ) {
 	e.Fields = append(
@@ -53,7 +44,7 @@ func (e *ValidationError) AddFieldOptionsError(
 	)
 }
 
-func (e *ValidationError) AppendOptionsInFieldError(
+func (e *Error) AppendOptionsInFieldError(
 	index int, options map[string]any,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -71,14 +62,14 @@ func (e *ValidationError) AppendOptionsInFieldError(
 	return true
 }
 
-func (e *ValidationError) AppendOptionsInLastFieldError(
+func (e *Error) AppendOptionsInLastFieldError(
 	options map[string]any,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.AppendOptionsInFieldError(index, options)
 }
 
-func (e *ValidationError) SetOptionsInFieldError(
+func (e *Error) SetOptionsInFieldError(
 	index int, options map[string]any,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -89,14 +80,14 @@ func (e *ValidationError) SetOptionsInFieldError(
 	return true
 }
 
-func (e *ValidationError) SetOptionsInLastFieldError(
+func (e *Error) SetOptionsInLastFieldError(
 	options map[string]any,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.SetOptionsInFieldError(index, options)
 }
 
-func (e *ValidationError) ClearOptionsInFieldError(
+func (e *Error) ClearOptionsInFieldError(
 	index int, options map[string]any,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -107,14 +98,14 @@ func (e *ValidationError) ClearOptionsInFieldError(
 	return true
 }
 
-func (e *ValidationError) ClearOptionsInLastFieldError(
+func (e *Error) ClearOptionsInLastFieldError(
 	options map[string]any,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.ClearOptionsInFieldError(index, options)
 }
 
-func (e *ValidationError) SetIndexInFieldError(
+func (e *Error) SetIndexInFieldError(
 	index, fieldIndex int,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -125,14 +116,14 @@ func (e *ValidationError) SetIndexInFieldError(
 	return true
 }
 
-func (e *ValidationError) SetIndexInLastFieldError(
+func (e *Error) SetIndexInLastFieldError(
 	fieldIndex int,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.SetIndexInFieldError(index, fieldIndex)
 }
 
-func (e *ValidationError) ClearIndexInFieldError(
+func (e *Error) ClearIndexInFieldError(
 	index, fieldIndex int,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -143,14 +134,14 @@ func (e *ValidationError) ClearIndexInFieldError(
 	return true
 }
 
-func (e *ValidationError) ClearIndexInLastFieldError(
+func (e *Error) ClearIndexInLastFieldError(
 	fieldIndex int,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.ClearIndexInFieldError(index, fieldIndex)
 }
 
-func (e *ValidationError) SetMessageInFieldError(
+func (e *Error) SetMessageInFieldError(
 	index int, message string,
 ) bool {
 	if len(e.Fields)-1 > index {
@@ -161,14 +152,14 @@ func (e *ValidationError) SetMessageInFieldError(
 	return true
 }
 
-func (e *ValidationError) SetMessageInLastFieldError(
+func (e *Error) SetMessageInLastFieldError(
 	message string,
 ) bool {
 	index := len(e.Fields) - 1
 	return e.SetMessageInFieldError(index, message)
 }
 
-func (e *ValidationError) MarshalJSON() ([]byte, error) {
+func (e *Error) MarshalJSON() ([]byte, error) {
 	fields := map[string]map[string][]Field{}
 
 	for _, v := range e.Fields {
@@ -212,16 +203,14 @@ func (e *ValidationError) MarshalJSON() ([]byte, error) {
 		Options   map[string]any                `json:"options,omitempty"`
 		Fields    map[string]map[string][]Field `json:"fields,omitempty"`
 	}{
-		ErrorType: string(e.Type),
-		Message:   e.Message,
-		Fields:    fields,
+		Message: e.Message,
+		Fields:  fields,
 	})
 }
 
 // TODO Написать валидацию при конвертировании
-func (e *ValidationError) UnmarshalJSON(data []byte) error {
+func (e *Error) UnmarshalJSON(data []byte) error {
 	type Error struct {
-		Type    errors.ErrorType   `json:"type"`
 		Message string             `json:"message,omitempty"`
 		Options map[string]any     `json:"options,omitempty"`
 		Fields  map[string][]Field `json:"fields,omitempty"`
@@ -232,7 +221,6 @@ func (e *ValidationError) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	e.Type = customError.Type
 	e.Message = customError.Message
 	e.Fields = []Field{}
 

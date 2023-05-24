@@ -7,8 +7,8 @@ import (
 )
 
 type Field struct {
-	FieldName string
 	ErrorKey  errors.ErrorKey
+	FieldName string
 	Message   string
 	Options   map[string]any
 	Index     *int // для привязки ошибок к элементам массива
@@ -54,13 +54,13 @@ func (f *Field) MarshalJSON() ([]byte, error) {
 }
 
 func (f *Field) UnmarshalJSON(data []byte) error {
-	type FieldError struct {
+	type Field struct {
 		ErrorKey errors.ErrorKey `json:"key,omitempty"`
 		Message  string          `json:"message,omitempty"`
 		Options  map[string]any  `json:"options,omitempty"`
 	}
 
-	fieldError := FieldError{}
+	fieldError := Field{}
 	if err := json.Unmarshal(data, &fieldError); err != nil {
 		return err
 	}

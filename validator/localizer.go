@@ -7,7 +7,7 @@ import (
 	"github.com/Epritka/gokit/localizer"
 )
 
-func (e *ValidationError) Localize(
+func (e *Error) Localize(
 	localizer localizer.Localizer,
 	localizeMessage func(string, errors.ErrorType) string,
 	cases []errors.Cases,
@@ -45,13 +45,11 @@ func (e *ValidationError) Localize(
 		})
 	}
 
-	return &ValidationError{
-		Message: localizeMessage(e.Message, e.Type),
+	return &Error{
+		Message: localizeMessage(e.Message, errors.ValidationErrorType),
 		// TODO потом заменить, когда все работать будет (нужно для дебага)
-		Debug:                e.Message,
-		Type:                 e.Type,
-		Fields:               fields,
-		IsErrorWithoutFields: e.IsErrorWithoutFields,
+		Debug:  e.Message,
+		Fields: fields,
 	}
 }
 
