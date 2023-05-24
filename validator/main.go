@@ -30,51 +30,48 @@ func Validate(structure Structure) error {
 	return nil
 }
 
-func validate(structure any) ([]*validation.Field, error) {
+func validate(structure Structure) ([]*validation.Field, error) {
 	fields := []*validation.Field{}
 	if clearer, ok := structure.(interface{ Clear() }); ok {
 		clearer.Clear()
 	}
 
-	if v, ok := structure.(interface{ Validators() []*Field }); ok {
-		validators := v.Validators()
-		for _, f := range validators {
-			field := validation.NewField(f.name)
+	for _, f := range structure.Fields() {
+		field := validation.NewField(f.name)
 
-			switch f.fieldType {
-			case primitiveType:
-				err := f.validateFunc(field)
+		switch f.fieldType {
+		case primitiveType:
+			err := f.validateFunc(field)
+			if err != nil {
+				if err.Error() == "break" {
+					break
+				}
+				return nil, err
+			}
+		case structureType:
+			fs, err := validate(f.structure)
+			if err != nil {
+				return nil, err
+			}
+
+			field.Fields = append(field.Fields, fs...)
+		case sliceType:
+			for i, structure := range f.slice {
+				fs, err := validate(structure)
 				if err != nil {
-					if err.Error() == "break" {
-						break
-					}
 					return nil, err
 				}
-			case structureType:
-				fs, err := validate(f.structure)
-				if err != nil {
-					return nil, err
+
+				if !field.IsEmpty() {
+					field.Index = &i
 				}
 
 				field.Fields = append(field.Fields, fs...)
-			case sliceType:
-				for i, structure := range f.slice {
-					fs, err := validate(structure)
-					if err != nil {
-						return nil, err
-					}
-
-					if !field.IsEmpty() {
-						field.Index = &i
-					}
-
-					field.Fields = append(field.Fields, fs...)
-				}
 			}
+		}
 
-			if !field.IsEmpty() {
-				fields = append(fields, field)
-			}
+		if !field.IsEmpty() {
+			fields = append(fields, field)
 		}
 	}
 

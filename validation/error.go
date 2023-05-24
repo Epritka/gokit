@@ -1,7 +1,7 @@
 package validation
 
 type Error struct {
-	Fields []*Field
+	Fields []*Field `json:"fields"`
 }
 
 func (e *Error) Error() string {

@@ -1,10 +1,10 @@
 package validation
 
 type Field struct {
-	Name   string
-	Info   []Info
-	Fields []*Field
-	Index  *int
+	Name   string   `json:"name"`
+	Info   []Info   `json:"info"`
+	Fields []*Field `json:"fields,omitempty"`
+	Index  *int     `json:"index,omitempty"`
 }
 
 func NewField(name string) *Field {
