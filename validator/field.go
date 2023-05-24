@@ -1,73 +1,52 @@
 package validator
 
-import (
-	"encoding/json"
+type fieldType int
 
-	"github.com/Epritka/gokit/errors"
+type Structure interface {
+	Fields() []*Field
+}
+
+const (
+	primitiveType fieldType = iota
+	structureType
+	sliceType
 )
 
 type Field struct {
-	ErrorKey  errors.ErrorKey
-	FieldName string
-	Message   string
-	Options   map[string]any
-	Index     *int // для привязки ошибок к элементам массива
+	name         string
+	fieldType    fieldType
+	validateFunc ValidateFunc
+	structure    Structure
+	slice        []Structure
 }
 
-func NewFieldError(fieldName string, errorKey errors.ErrorKey) Field {
-	return Field{
-		FieldName: fieldName,
-		ErrorKey:  errorKey,
-	}
-}
-
-func NewFieldIndexError(fieldName string, errorKey errors.ErrorKey, index int) Field {
-	return Field{
-		FieldName: fieldName,
-		ErrorKey:  errorKey,
-		Index:     &index,
+func NewField(name string, validateFunc ValidateFunc) *Field {
+	return &Field{
+		name:         name,
+		fieldType:    primitiveType,
+		validateFunc: validateFunc,
 	}
 }
 
-func NewFieldOptionsError(fieldName string, errorKey errors.ErrorKey, options map[string]any) Field {
-	return Field{
-		FieldName: fieldName,
-		ErrorKey:  errorKey,
-		Options:   options,
+func NewStruct(name string, structure Structure) *Field {
+	return &Field{
+		name:      name,
+		fieldType: structureType,
+		structure: structure,
 	}
 }
 
-func (f *Field) MarshalJSON() ([]byte, error) {
-	if f.Message == "" {
-		f.Message = DefaultFieldMessages[f.ErrorKey]
+func NewSlice(name string, slice []Structure) *Field {
+	return &Field{
+		name:      name,
+		fieldType: sliceType,
+		slice:     slice,
 	}
-
-	return json.Marshal(&struct {
-		ErrorKey errors.ErrorKey `json:"key,omitempty"`
-		Message  string          `json:"message,omitempty"`
-		Options  map[string]any  `json:"options,omitempty"`
-	}{
-		ErrorKey: f.ErrorKey,
-		Message:  f.Message,
-		Options:  f.Options,
-	})
 }
 
-func (f *Field) UnmarshalJSON(data []byte) error {
-	type Field struct {
-		ErrorKey errors.ErrorKey `json:"key,omitempty"`
-		Message  string          `json:"message,omitempty"`
-		Options  map[string]any  `json:"options,omitempty"`
+func SliceOfStruct[T Structure](structures []T) (result []Structure) {
+	for _, s := range structures {
+		result = append(result, s)
 	}
-
-	fieldError := Field{}
-	if err := json.Unmarshal(data, &fieldError); err != nil {
-		return err
-	}
-
-	f.ErrorKey = fieldError.ErrorKey
-	f.Message = fieldError.Message
-	f.Options = fieldError.Options
-
-	return nil
+	return
 }

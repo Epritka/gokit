@@ -2,7 +2,6 @@ package wrapper
 
 import (
 	"github.com/Epritka/gokit/errors"
-	"github.com/Epritka/gokit/validator"
 )
 
 type Wrapper func(error) error
@@ -13,10 +12,10 @@ func Wrap(err error, wrappers ...Wrapper) error {
 		return result
 	}
 
-	result = validator.Wrap(err)
-	if result != nil {
-		return result
-	}
+	// result = validator.Wrap(err)
+	// if result != nil {
+	// 	return result
+	// }
 
 	for _, wrapper := range wrappers {
 		result = wrapper(err)

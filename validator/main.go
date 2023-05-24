@@ -1,18 +1,82 @@
 package validator
 
-import "github.com/Epritka/gokit/errors"
+import (
+	"fmt"
 
-func CompareByFieldNameAndKey(err error, fieldName string, key errors.ErrorKey) bool {
-	cErr, ok := err.(*Error)
-	if !ok {
-		return false
+	"github.com/Epritka/gokit/validation"
+)
+
+type (
+	ValidateFunc func(*validation.Field) error
+)
+
+var (
+	Break = fmt.Errorf("break")
+)
+
+func Validate(structure Structure) error {
+	fields, err := validate(structure)
+
+	if err != nil {
+		return err
 	}
 
-	for _, f := range cErr.Fields {
-		if f.FieldName == fieldName && f.ErrorKey == key {
-			return true
+	if len(fields) > 0 {
+		return &validation.Error{
+			Fields: fields,
 		}
 	}
 
-	return false
+	return nil
+}
+
+func validate(structure any) ([]*validation.Field, error) {
+	fields := []*validation.Field{}
+	if clearer, ok := structure.(interface{ Clear() }); ok {
+		clearer.Clear()
+	}
+
+	if v, ok := structure.(interface{ Validators() []*Field }); ok {
+		validators := v.Validators()
+		for _, f := range validators {
+			field := validation.NewField(f.name)
+
+			switch f.fieldType {
+			case primitiveType:
+				err := f.validateFunc(field)
+				if err != nil {
+					if err.Error() == "break" {
+						break
+					}
+					return nil, err
+				}
+			case structureType:
+				fs, err := validate(f.structure)
+				if err != nil {
+					return nil, err
+				}
+
+				field.Fields = append(field.Fields, fs...)
+			case sliceType:
+				for i, structure := range f.slice {
+					fs, err := validate(structure)
+					if err != nil {
+						return nil, err
+					}
+
+					if !field.IsEmpty() {
+						field.Index = &i
+					}
+
+					field.Fields = append(field.Fields, fs...)
+				}
+			}
+
+			if !field.IsEmpty() {
+				fields = append(fields, field)
+			}
+		}
+	}
+
+	return fields, nil
 }

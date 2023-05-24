@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Epritka/gokit/errors"
-	"github.com/Epritka/gokit/validator"
+	"github.com/Epritka/gokit/validation"
 )
 
 type SuccessResponse[T any] struct {
@@ -30,7 +30,7 @@ func FailedHttpResponse(err error) (int, FailedResponse) {
 }
 
 func (r *FailedResponse) UnmarshalJSON(data []byte) error {
-	validationError := struct{ Error validator.Error }{}
+	validationError := struct{ Error validation.Error }{}
 	err := json.Unmarshal(data, &validationError)
 	if err == nil {
 		r.Error = &validationError.Error
@@ -50,10 +50,10 @@ func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (r *SuccessResponse[T]) UnmarshalJSON(data []byte) error {
-	err := json.Unmarshal(data, &r)
-	if err != nil {
-		return validator.Wrap(err)
-	}
+	// err := json.Unmarshal(data, &r)
+	// if err != nil {
+	// 	return validation.Wrap(err)
+	// }
 
 	return nil
 }
@@ -64,7 +64,7 @@ func getStatusCodeByError(err error) int {
 	switch t := err.(type) {
 	case *errors.DefaultError:
 		errType = t.Type
-	case *validator.Error:
+	case *validation.Error:
 		return http.StatusUnprocessableEntity
 	}
 

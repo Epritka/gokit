@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/Epritka/gokit/test/validator"
+import "github.com/Epritka/gokit/validator"
 
 func Run(useCase any) (err error) {
 	if initializator, ok := useCase.(interface{ Init() error }); ok {
