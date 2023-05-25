@@ -28,9 +28,8 @@ func (u *UserInput) ValidateIpAddress(field *validation.Field) error {
 		return nil
 	}
 
-	ip := validation.Ip(u.IpAddress)
+	ip := validator.Ip(u.IpAddress)
 	errorKey := ip.Validate()
-
 	if errorKey != "" {
 		field.AddInfo(validation.Info{
 			Key: validation.WrongFormat,

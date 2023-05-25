@@ -1,16 +1,7 @@
 package validation
 
 import (
-	"net"
-
 	"github.com/Epritka/gokit/errors"
-)
-
-type (
-	Ip   string
-	Cidr string
-	Asn  int
-	Port int
 )
 
 const (
@@ -77,40 +68,3 @@ var (
 		"ParseBool":    NotBool,
 	}
 )
-
-func (cidr *Cidr) Validate() (errors.ErrorKey, map[string]any) {
-	ip, net, err := net.ParseCIDR(string(*cidr))
-
-	if err != nil {
-		return WrongFormat, nil
-	}
-
-	if net.IP.String() != ip.String() {
-		return NotMatch, map[string]any{
-			"cidr": net.IP.String(),
-		}
-	}
-
-	return "", nil
-}
-
-func (ip *Ip) Validate() errors.ErrorKey {
-	if net.ParseIP(string(*ip)) != nil {
-		return WrongFormat
-	}
-	return ""
-}
-
-func (asn *Asn) Validate() errors.ErrorKey {
-	if *asn < 0 || *asn > 65535 {
-		return WrongFormat
-	}
-	return ""
-}
-
-func (port *Port) Validate() errors.ErrorKey {
-	if *port < 0 || *port > 65535 {
-		return WrongFormat
-	}
-	return ""
-}
