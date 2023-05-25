@@ -19,8 +19,8 @@ type (
 	}
 )
 
-func (cidr *Cidr) Validate() (errors.ErrorKey, map[string]any) {
-	ip, net, err := net.ParseCIDR(string(*cidr))
+func (cidr Cidr) Validate() (errors.ErrorKey, map[string]any) {
+	ip, net, err := net.ParseCIDR(string(cidr))
 	if err != nil {
 		return validation.WrongFormat, nil
 	}
@@ -34,16 +34,16 @@ func (cidr *Cidr) Validate() (errors.ErrorKey, map[string]any) {
 	return "", nil
 }
 
-func (ip *Ip) Validate() errors.ErrorKey {
-	return ternary(net.ParseIP(string(*ip)) != nil, validation.WrongFormat, "")
+func (ip Ip) Validate() errors.ErrorKey {
+	return ternary(net.ParseIP(string(ip)) != nil, validation.WrongFormat, "")
 }
 
-func (asn *Asn) Validate() errors.ErrorKey {
-	return minMax(*asn, 0, 65535)
+func (asn Asn) Validate() errors.ErrorKey {
+	return minMax(asn, 0, 65535)
 }
 
-func (port *Port) Validate() errors.ErrorKey {
-	return minMax(*port, 0, 65535)
+func (port Port) Validate() errors.ErrorKey {
+	return minMax(port, 0, 65535)
 }
 
 func ternary[T any](cond bool, x T, y T) T {
