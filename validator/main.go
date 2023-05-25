@@ -32,6 +32,10 @@ func Validate(structure Structure) error {
 
 func validate(structure Structure) ([]*validation.Field, error) {
 	fields := []*validation.Field{}
+	if structure == nil {
+		return fields, nil
+	}
+
 	if clearer, ok := structure.(interface{ Clear() }); ok {
 		clearer.Clear()
 	}
@@ -43,10 +47,15 @@ func validate(structure Structure) ([]*validation.Field, error) {
 		case primitiveType:
 			err := f.validateFunc(field)
 			if err != nil {
-				if err.Error() == "break" {
-					break
+				if err.Error() != "break" {
+					return nil, err
 				}
-				return nil, err
+
+				if !field.IsEmpty() {
+					fields = append(fields, field)
+				}
+
+				return fields, nil
 			}
 		case structureType:
 			fs, err := validate(f.structure)

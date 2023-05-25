@@ -14,12 +14,13 @@ type UseCase struct {
 }
 
 func (useCase *UseCase) validationId(field *validation.Field) error {
-	field.AddInfo(validation.Info{
-		Key: validation.Email,
-	})
+	// field.AddInfo(validation.Info{
+	// 	Key: validation.Email,
+	// })
+	// return validator.Break
 
 	// return errors.NotFoundError()
-	useCase.dbUser = UserInput{}
+	// useCase.dbUser = UserInput{}
 	return nil
 }
 
@@ -37,11 +38,16 @@ func (useCase *UseCase) Execute() error {
 }
 
 func Create() error {
+	ip := "10.10.10.10"
+	errorKey := validator.Ip(ip).Validate()
+	fmt.Println(errorKey)
+
 	useCase := &UseCase{
 		User: UserInput{
 			Name:      "name",
 			Email:     "mail@mail.com",
-			IpAddress: "10.10.10.10",
+			Prefix:    "10.10.10.100/32",
+			IpAddress: ip,
 			Password:  "Password",
 			Roles: []*RoleInput{
 				{Name: "admin"},

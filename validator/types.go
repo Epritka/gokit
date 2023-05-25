@@ -35,7 +35,7 @@ func (cidr Cidr) Validate() (errors.ErrorKey, map[string]any) {
 }
 
 func (ip Ip) Validate() errors.ErrorKey {
-	return ternary(net.ParseIP(string(ip)) != nil, validation.WrongFormat, "")
+	return ternary(net.ParseIP(string(ip)) == nil, validation.WrongFormat, "")
 }
 
 func (asn Asn) Validate() errors.ErrorKey {

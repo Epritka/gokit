@@ -4,7 +4,7 @@ import "github.com/Epritka/gokit/errors"
 
 type Field struct {
 	Name   string   `json:"name"`
-	Info   []Info   `json:"info"`
+	Info   []Info   `json:"info,omitempty"`
 	Fields []*Field `json:"fields,omitempty"`
 	Index  *int     `json:"index,omitempty"`
 }
