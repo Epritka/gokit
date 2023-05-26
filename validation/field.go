@@ -29,6 +29,6 @@ func (item *Field) AddErrorKey(key errors.ErrorKey) {
 	item.Info = append(item.Info, Info{Key: key})
 }
 
-func (item *Field) AddErrorKeyOptions(key errors.ErrorKey, options map[string]any) {
+func (item *Field) AddErrorKeyOptions(key errors.ErrorKey, options Options) {
 	item.Info = append(item.Info, Info{Key: key, Options: options})
 }

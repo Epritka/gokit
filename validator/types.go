@@ -19,14 +19,14 @@ type (
 	}
 )
 
-func (cidr Cidr) Validate() (errors.ErrorKey, map[string]any) {
+func (cidr Cidr) Validate() (errors.ErrorKey, validation.Options) {
 	ip, net, err := net.ParseCIDR(string(cidr))
 	if err != nil {
 		return validation.WrongFormat, nil
 	}
 
 	if net.IP.String() != ip.String() {
-		return validation.NotMatch, map[string]any{
+		return validation.NotMatch, validation.Options{
 			"cidr": net.IP.String(),
 		}
 	}
@@ -38,11 +38,11 @@ func (ip Ip) Validate() errors.ErrorKey {
 	return ternary(net.ParseIP(string(ip)) == nil, validation.WrongFormat, "")
 }
 
-func (asn Asn) Validate() errors.ErrorKey {
+func (asn Asn) Validate() (errors.ErrorKey, validation.Options) {
 	return MinMaxValidate(asn, 0, 65535)
 }
 
-func (port Port) Validate() errors.ErrorKey {
+func (port Port) Validate() (errors.ErrorKey, validation.Options) {
 	return MinMaxValidate(port, 0, 65535)
 }
 
@@ -53,14 +53,14 @@ func ternary[T any](cond bool, x T, y T) T {
 	return y
 }
 
-func MinMaxValidate[T Number](value, min, max T) errors.ErrorKey {
+func MinMaxValidate[T Number](value, min, max T) (errors.ErrorKey, validation.Options) {
 	if value < min {
-		return validation.Min
+		return validation.Min, validation.Options{"min": min}
 	}
 
 	if value > max {
-		return validation.Max
+		return validation.Max, validation.Options{"max": max}
 	}
 
-	return ""
+	return "", nil
 }
