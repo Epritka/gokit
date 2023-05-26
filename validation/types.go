@@ -37,12 +37,13 @@ const (
 	NotFound    errors.ErrorKey = "notFound"
 	NotPossible errors.ErrorKey = "notPossible"
 
-	NotType   errors.ErrorKey = "notType"
-	NotInt    errors.ErrorKey = "notInt"
-	NotFloat  errors.ErrorKey = "notFloat"
-	NotBool   errors.ErrorKey = "notBool"
-	NotArray  errors.ErrorKey = "notArray"
-	NotString errors.ErrorKey = "notString"
+	UnknowType errors.ErrorKey = "unknowType"
+	NotType    errors.ErrorKey = "notType"
+	NotInt     errors.ErrorKey = "notInt"
+	NotFloat   errors.ErrorKey = "notFloat"
+	NotBool    errors.ErrorKey = "notBool"
+	NotArray   errors.ErrorKey = "notArray"
+	NotString  errors.ErrorKey = "notString"
 )
 
 var (

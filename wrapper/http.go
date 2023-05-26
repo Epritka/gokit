@@ -45,7 +45,9 @@ func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 	}
 
 	return &errors.DefaultError{
-		Message: string(data),
+		Message:     "error parse failed response",
+		Type:        errors.InternalErrorType,
+		SourceError: err,
 	}
 }
 
@@ -75,12 +77,15 @@ func getStatusCodeByError(err error) int {
 	case errors.NotFoundErrorType:
 		return http.StatusNotFound
 
+	case errors.ValidationErrorType:
+		return http.StatusUnprocessableEntity
+
 	case errors.MethodNotAllowedErrorType:
 		return http.StatusMethodNotAllowed
 
 	case errors.ServiceUnavailableErrorType,
 		errors.UnknownErrorType:
-		return http.StatusInternalServerError
+		fallthrough
 	default:
 		return http.StatusInternalServerError
 	}

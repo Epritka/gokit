@@ -19,6 +19,18 @@ type (
 	}
 )
 
+func MinMaxValidate[T Number](value, min, max T) (errors.ErrorKey, validation.Options) {
+	if value < min {
+		return validation.Min, validation.Options{"min": min}
+	}
+
+	if value > max {
+		return validation.Max, validation.Options{"max": max}
+	}
+
+	return "", nil
+}
+
 func (cidr Cidr) Validate() (errors.ErrorKey, validation.Options) {
 	ip, net, err := net.ParseCIDR(string(cidr))
 	if err != nil {
@@ -51,16 +63,4 @@ func ternary[T any](cond bool, x T, y T) T {
 		return x
 	}
 	return y
-}
-
-func MinMaxValidate[T Number](value, min, max T) (errors.ErrorKey, validation.Options) {
-	if value < min {
-		return validation.Min, validation.Options{"min": min}
-	}
-
-	if value > max {
-		return validation.Max, validation.Options{"max": max}
-	}
-
-	return "", nil
 }

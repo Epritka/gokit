@@ -65,7 +65,11 @@ func validate(structure Structure) ([]*validation.Field, error) {
 				return nil, err
 			}
 
-			field.Fields = append(field.Fields, fs...)
+			if f.isInlineStruct {
+				fields = append(fields, fs...)
+			} else {
+				field.Fields = append(field.Fields, fs...)
+			}
 		case sliceType:
 			for i, structure := range f.slice {
 				fs, err := validate(structure)

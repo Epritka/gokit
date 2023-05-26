@@ -13,11 +13,12 @@ const (
 )
 
 type Field struct {
-	name         string
-	fieldType    fieldType
-	validateFunc ValidateFunc
-	structure    Structure
-	slice        []Structure
+	name           string
+	fieldType      fieldType
+	validateFunc   ValidateFunc
+	structure      Structure
+	slice          []Structure
+	isInlineStruct bool
 }
 
 func NewField(name string, validateFunc ValidateFunc) *Field {
@@ -33,6 +34,14 @@ func NewStruct(name string, structure Structure) *Field {
 		name:      name,
 		fieldType: structureType,
 		structure: structure,
+	}
+}
+
+func NewInlineStruct(structure Structure) *Field {
+	return &Field{
+		fieldType:      structureType,
+		structure:      structure,
+		isInlineStruct: true,
 	}
 }
 
