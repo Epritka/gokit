@@ -15,12 +15,14 @@ type UserInput struct {
 	Email     string
 	Password  string
 	Roles     []*RoleInput
+	Role      *RoleInput
 }
 
 func (u *UserInput) Fields() []*validator.Field {
 	return []*validator.Field{
 		validator.NewField("prefix", u.ValidatePrefix),
 		validator.NewField("ipAddress", u.ValidateIpAddress),
+		validator.NewStruct("role", u.Role),
 		validator.NewSlice("roles", validator.SliceOfStruct(u.Roles)),
 	}
 }

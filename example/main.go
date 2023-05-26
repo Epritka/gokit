@@ -49,6 +49,7 @@ func Create() error {
 			Prefix:    "10.10.10.100/32",
 			IpAddress: ip,
 			Password:  "Password",
+			Role:      nil,
 			Roles: []*RoleInput{
 				{Name: "admin"},
 				{Name: ""},

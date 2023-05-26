@@ -39,11 +39,11 @@ func (ip Ip) Validate() errors.ErrorKey {
 }
 
 func (asn Asn) Validate() errors.ErrorKey {
-	return minMax(asn, 0, 65535)
+	return MinMaxValidate(asn, 0, 65535)
 }
 
 func (port Port) Validate() errors.ErrorKey {
-	return minMax(port, 0, 65535)
+	return MinMaxValidate(port, 0, 65535)
 }
 
 func ternary[T any](cond bool, x T, y T) T {
@@ -53,7 +53,7 @@ func ternary[T any](cond bool, x T, y T) T {
 	return y
 }
 
-func minMax[T Number](value, min, max T) errors.ErrorKey {
+func MinMaxValidate[T Number](value, min, max T) errors.ErrorKey {
 	if value < min {
 		return validation.Min
 	}

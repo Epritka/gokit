@@ -2,6 +2,7 @@ package validator
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/Epritka/gokit/validation"
 )
@@ -32,7 +33,8 @@ func Validate(structure Structure) error {
 
 func validate(structure Structure) ([]*validation.Field, error) {
 	fields := []*validation.Field{}
-	if structure == nil {
+
+	if structIsNil(structure) {
 		return fields, nil
 	}
 
@@ -85,4 +87,19 @@ func validate(structure Structure) ([]*validation.Field, error) {
 	}
 
 	return fields, nil
+}
+
+func structIsNil(structure Structure) bool {
+	if structure == nil {
+		return true
+	}
+	switch reflect.ValueOf(structure).Kind() {
+	case reflect.Ptr,
+		reflect.Map,
+		reflect.Array,
+		reflect.Slice:
+		return reflect.ValueOf(structure).IsNil()
+	default:
+		return false
+	}
 }
