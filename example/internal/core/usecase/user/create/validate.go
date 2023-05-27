@@ -1,4 +1,4 @@
-package example
+package create
 
 import (
 	"github.com/Epritka/gokit/validation"

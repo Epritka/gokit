@@ -1,6 +1,8 @@
-package example
+package create
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (useCase *UseCase) Execute() error {
 	fmt.Println("executed")

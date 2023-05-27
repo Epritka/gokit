@@ -77,11 +77,12 @@ func validate(structure Structure) ([]*validation.Field, error) {
 					return nil, err
 				}
 
-				if !field.IsEmpty() {
-					field.Index = &i
+				if len(fs) > 0 {
+					field.ArrayFields = append(
+						field.ArrayFields,
+						validation.NewArrayField(fs, i),
+					)
 				}
-
-				field.Fields = append(field.Fields, fs...)
 			}
 		}
 

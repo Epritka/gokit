@@ -1,4 +1,7 @@
+.PHONY: http
+http:
+	go run ./example/cmd/http/main.go
+	
 .PHONY: sandbox
-# Запуск консольного приложения
 sandbox:
-	go run ./sandbox/main.go
+	go run ./example/cmd/sandbox/main.go
