@@ -30,6 +30,24 @@ func FailedHttpResponse(err error) (int, FailedResponse) {
 	return getStatusCodeByError(err), FailedResponse{Error: err}
 }
 
+func NewSuccessResponsep[T any](data []byte) (*SuccessResponse[T], error) {
+	response := SuccessResponse[T]{}
+	err := json.Unmarshal(data, &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func NewFaildedResponse(data []byte) (*FailedResponse, error) {
+	response := FailedResponse{}
+	err := json.Unmarshal(data, &response)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
 func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 	validationError := struct{ Error validation.Error }{}
 	err := json.Unmarshal(data, &validationError)
