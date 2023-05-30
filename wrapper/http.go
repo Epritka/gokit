@@ -52,15 +52,6 @@ func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 	}
 }
 
-func (r *SuccessResponse[T]) UnmarshalJSON(data []byte) error {
-	err := json.Unmarshal(data, &r)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func getStatusCodeByError(err error) int {
 	errType := errors.UnknownErrorType
 
