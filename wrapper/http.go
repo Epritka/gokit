@@ -27,7 +27,7 @@ func SuccessHttpResponseWithCount[T any](data T, count int) (int, SuccessRespons
 
 func FailedHttpResponse(err error) (int, FailedResponse) {
 	err = Wrap(err)
-	return getStatusCodeByError(err), FailedResponse{Error: err}
+	return GetStatusCodeByError(err), FailedResponse{Error: err}
 }
 
 func ErrorFromFaildedResponse(data []byte) error {
@@ -61,7 +61,7 @@ func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 	}
 }
 
-func getStatusCodeByError(err error) int {
+func GetStatusCodeByError(err error) int {
 	errType := errors.UnknownErrorType
 
 	switch t := err.(type) {
