@@ -1,6 +1,7 @@
 package wrapper
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 
@@ -40,24 +41,31 @@ func ErrorFromFaildedResponse(data []byte) error {
 }
 
 func (r *FailedResponse) UnmarshalJSON(data []byte) error {
+	reader := bytes.NewReader(data)
+	decoder := json.NewDecoder(reader)
+	decoder.DisallowUnknownFields()
+
 	validationError := struct{ Error validation.Error }{}
-	err := json.Unmarshal(data, &validationError)
+
+	err := decoder.Decode(&validationError)
 	if err == nil {
 		r.Error = &validationError.Error
 		return nil
 	}
 
 	deaultError := struct{ Error errors.DefaultError }{}
-	err = json.Unmarshal(data, &deaultError)
+	err = decoder.Decode(&deaultError)
 	if err == nil {
 		r.Error = &deaultError.Error
 		return nil
 	}
 
+	meta := map[string]any{}
+	decoder.Decode(&meta)
+
 	return &errors.DefaultError{
-		Message:     "error parse failed response",
-		Type:        errors.InternalErrorType,
-		SourceError: err,
+		Type: errors.InternalErrorType,
+		Meta: meta,
 	}
 }
 
