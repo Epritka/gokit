@@ -41,25 +41,37 @@ func ErrorFromFaildedResponse(data []byte) error {
 }
 
 func (r *FailedResponse) UnmarshalJSON(data []byte) error {
+	type Response[T any] struct {
+		Error T `json:"error"`
+	}
+
 	reader := bytes.NewReader(data)
 	decoder := json.NewDecoder(reader)
 	decoder.DisallowUnknownFields()
 
-	validationError := struct{ Error validation.Error }{}
-
-	err := decoder.Decode(&validationError)
-	if err == nil {
-		r.Error = &validationError.Error
-		return nil
+	validationError := Response[validation.Error]{}
+	if err := decoder.Decode(&validationError); err == nil {
+		return &validationError.Error
 	}
 
-	deaultError := struct{ Error errors.DefaultError }{}
-	err = decoder.Decode(&deaultError)
-	if err == nil {
-		r.Error = &deaultError.Error
-		return nil
+	reader.Seek(0, 0)
+	deaultError := Response[errors.DefaultError]{}
+
+	if err := decoder.Decode(&deaultError); err == nil {
+		return &deaultError.Error
 	}
 
+	reader.Seek(0, 0)
+	unknownError := Response[map[string]any]{}
+
+	if err := decoder.Decode(&unknownError); err == nil {
+		return &errors.DefaultError{
+			Type: errors.UnknownErrorType,
+			Meta: unknownError.Error,
+		}
+	}
+
+	reader.Seek(0, 0)
 	meta := map[string]any{}
 	decoder.Decode(&meta)
 
