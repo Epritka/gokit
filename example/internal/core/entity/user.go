@@ -13,13 +13,13 @@ type User struct {
 	Doc      *Doc    `json:"doc"`
 }
 
-func (u *User) Fields() []*validator.Field {
-	return []*validator.Field{
+func (u *User) Fields() validator.Fields {
+	return validator.NewFields(
 		validator.NewField("name", u.ValidateName),
 		validator.NewField("password", u.ValidatePassword),
 		validator.NewSlice("roles", validator.SliceOfStruct(u.Roles)),
 		validator.NewStruct("doc", u.Doc),
-	}
+	)
 }
 
 func (u *User) ValidateName(field *validation.Field) error {

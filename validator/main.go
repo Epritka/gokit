@@ -62,7 +62,7 @@ func validate(structure Structure) ([]*validation.Field, error) {
 				return nil, err
 			}
 
-			if f.isInlineStruct {
+			if f.isJoinedStruct {
 				fields = append(fields, fs...)
 			} else {
 				field.Fields = append(field.Fields, fs...)

@@ -2,32 +2,48 @@ package wrapper
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"net/url"
 	"strconv"
 	"strings"
 
-	kiterrors "github.com/Epritka/gokit/errors"
+	"github.com/Epritka/gokit/errors"
 	"github.com/Epritka/gokit/validation"
 )
 
 func NotFoundError() error {
-	return &kiterrors.DefaultError{
-		Type: kiterrors.NotFoundErrorType,
+	return &errors.DefaultError{
+		Type: errors.NotFoundErrorType,
 	}
 }
 
-func Wrap(err error) error {
-	// TODO: Подумать куда переместить
-	if errors.Is(err, io.EOF) {
-		return &kiterrors.DefaultError{
-			Type: kiterrors.ValidationErrorType,
+func HttpWrap(err error) error {
+	if err == io.EOF {
+		return &errors.DefaultError{
+			Type: errors.ValidationErrorType,
 		}
 	}
 
 	switch t := err.(type) {
-	case *kiterrors.DefaultError,
+	case *json.SyntaxError:
+		return &errors.DefaultError{
+			Type:        errors.ValidationErrorType,
+			SourceError: err,
+		}
+	case *strconv.NumError:
+		return &errors.DefaultError{
+			Message:     string(validation.StrconvTypes[t.Func]),
+			Type:        errors.ValidationErrorType,
+			SourceError: err,
+		}
+	}
+
+	return Wrap(err)
+}
+
+func Wrap(err error) error {
+	switch t := err.(type) {
+	case *errors.DefaultError,
 		*validation.Error:
 		return err
 	case *json.UnmarshalTypeError:
@@ -52,25 +68,14 @@ func Wrap(err error) error {
 		return &validation.Error{
 			Fields: []*validation.Field{mainField},
 		}
-	case *json.SyntaxError:
-		return &kiterrors.DefaultError{
-			Type:        kiterrors.ValidationErrorType,
-			SourceError: err,
-		}
-	case *strconv.NumError:
-		return &kiterrors.DefaultError{
-			Message:     string(validation.StrconvTypes[t.Func]),
-			Type:        kiterrors.ValidationErrorType,
-			SourceError: err,
-		}
 	case *url.Error:
-		return &kiterrors.DefaultError{
-			Type:        kiterrors.ServiceUnavailableErrorType,
+		return &errors.DefaultError{
+			Type:        errors.ServiceUnavailableErrorType,
 			SourceError: err,
 		}
 	default:
-		return &kiterrors.DefaultError{
-			Type:        kiterrors.UnknownErrorType,
+		return &errors.DefaultError{
+			Type:        errors.UnknownErrorType,
 			SourceError: err,
 		}
 	}

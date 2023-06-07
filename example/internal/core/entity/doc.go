@@ -19,11 +19,11 @@ type Test2 struct {
 	Name string `json:"name"`
 }
 
-func (d *Doc) Fields() []*validator.Field {
-	return []*validator.Field{
+func (d *Doc) Fields() validator.Fields {
+	return validator.NewFields(
 		validator.NewField("name", d.ValidateName),
 		validator.NewField("type", d.ValidateName),
-	}
+	)
 }
 
 func (d *Doc) ValidateName(field *validation.Field) error {

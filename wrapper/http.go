@@ -32,15 +32,6 @@ func FailedHttpResponse(err error) (int, FailedResponse) {
 }
 
 func ErrorFromFaildedResponse(data []byte) error {
-	response := FailedResponse{}
-	err := json.Unmarshal(data, &response)
-	if err != nil {
-		return err
-	}
-	return response.Error
-}
-
-func (r *FailedResponse) UnmarshalJSON(data []byte) error {
 	type Response[T any] struct {
 		Error T `json:"error"`
 	}

@@ -3,7 +3,17 @@ package validator
 type fieldType int
 
 type Structure interface {
-	Fields() []*Field
+	Fields() Fields
+}
+
+type Fields []*Field
+type Field struct {
+	name           string
+	fieldType      fieldType
+	validateFunc   ValidateFunc
+	structure      Structure
+	slice          []Structure
+	isJoinedStruct bool
 }
 
 const (
@@ -12,13 +22,18 @@ const (
 	sliceType
 )
 
-type Field struct {
-	name           string
-	fieldType      fieldType
-	validateFunc   ValidateFunc
-	structure      Structure
-	slice          []Structure
-	isInlineStruct bool
+func NewFields(fields ...*Field) Fields {
+	return fields
+}
+
+func (fs Fields) Append(field *Field) Fields {
+	fs = append(fs, field)
+	return fs
+}
+
+func (fs Fields) Join(structure Structure) Fields {
+	fs = append(fs, NewJoinedStruct(structure))
+	return fs
 }
 
 func NewField(name string, validateFunc ValidateFunc) *Field {
@@ -37,11 +52,11 @@ func NewStruct(name string, structure Structure) *Field {
 	}
 }
 
-func NewInlineStruct(structure Structure) *Field {
+func NewJoinedStruct(structure Structure) *Field {
 	return &Field{
 		fieldType:      structureType,
 		structure:      structure,
-		isInlineStruct: true,
+		isJoinedStruct: true,
 	}
 }
 

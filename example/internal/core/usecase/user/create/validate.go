@@ -5,11 +5,10 @@ import (
 	"github.com/Epritka/gokit/validator"
 )
 
-func (useCase *UseCase) Fields() []*validator.Field {
-	return []*validator.Field{
+func (useCase *UseCase) Fields() validator.Fields {
+	return validator.NewFields(
 		validator.NewField("id", useCase.validationId),
-		validator.NewInlineStruct(&useCase.User),
-	}
+	).Join(&useCase.User)
 }
 
 func (useCase *UseCase) validationId(field *validation.Field) error {

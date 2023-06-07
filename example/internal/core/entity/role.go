@@ -15,10 +15,10 @@ func (r *Role) Clear() {
 	r.Name = strings.TrimSpace(r.Name)
 }
 
-func (r *Role) Fields() []*validator.Field {
-	return []*validator.Field{
+func (r *Role) Fields() validator.Fields {
+	return validator.NewFields(
 		validator.NewField("name", r.ValidateName),
-	}
+	)
 }
 
 func (r *Role) ValidateName(field *validation.Field) error {
