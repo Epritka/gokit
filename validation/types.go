@@ -15,36 +15,32 @@ const (
 	Max       errors.ErrorKey = "max"
 
 	Email errors.ErrorKey = "email"
-)
 
-var (
-	DefaultFieldMessages = map[errors.ErrorKey]string{
-		AlreadyExist: "object with field already exist",
-		WrongFormat:  "field has wrong format",
-		Required:     "field is required",
-
-		MinLenght: "field too small",
-		MaxLenght: "field too long",
-		Min:       "field has value less minimal",
-		Max:       "field has value more maximum",
-
-		Email: "format of this field should be email",
-	}
-)
-
-const (
 	NotMatch    errors.ErrorKey = "notMatch"
 	NotFound    errors.ErrorKey = "notFound"
 	NotPossible errors.ErrorKey = "notPossible"
 
-	UnknowType errors.ErrorKey = "unknowType"
-	NotType    errors.ErrorKey = "notType"
-	NotInt     errors.ErrorKey = "notInt"
-	NotFloat   errors.ErrorKey = "notFloat"
-	NotBool    errors.ErrorKey = "notBool"
-	NotArray   errors.ErrorKey = "notArray"
-	NotString  errors.ErrorKey = "notString"
+	NotEnum   errors.ErrorKey = "notEnum"
+	NotType   errors.ErrorKey = "notType"
+	NotInt    errors.ErrorKey = "notInt"
+	NotFloat  errors.ErrorKey = "notFloat"
+	NotBool   errors.ErrorKey = "notBool"
+	NotArray  errors.ErrorKey = "notArray"
+	NotString errors.ErrorKey = "notString"
 )
+
+var DefaultFieldMessages = map[errors.ErrorKey]string{
+	AlreadyExist: "object with field already exist",
+	WrongFormat:  "field has wrong format",
+	Required:     "field is required",
+
+	MinLenght: "field too small",
+	MaxLenght: "field too long",
+	Min:       "field has value less minimal",
+	Max:       "field has value more maximum",
+
+	Email: "format of this field should be email",
+}
 
 var (
 	StandardTypes = map[string]errors.ErrorKey{

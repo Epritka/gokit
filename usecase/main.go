@@ -1,5 +1,7 @@
 package usecase
 
+// TODO: отдельный пакет
+
 import "github.com/Epritka/gokit/validator"
 
 func Run(useCase any) (err error) {

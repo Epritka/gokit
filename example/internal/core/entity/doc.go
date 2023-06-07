@@ -35,10 +35,9 @@ func (d *Doc) ValidateName(field *validation.Field) error {
 
 func (d *Doc) ValidateType(field *validation.Field) error {
 	switch d.Type {
-	case "passport",
-		"driver's license":
+	case "passport", "driver's license":
 	default:
-		field.AddErrorKey(validation.UnknowType)
+		field.AddErrorKey(validation.NotEnum)
 		return validator.Break
 	}
 

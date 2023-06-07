@@ -11,13 +11,10 @@ type (
 	ValidateFunc func(*validation.Field) error
 )
 
-var (
-	Break = fmt.Errorf("break")
-)
+var Break = fmt.Errorf("break")
 
 func Validate(structure Structure) error {
 	fields, err := validate(structure)
-
 	if err != nil {
 		return err
 	}
@@ -49,7 +46,7 @@ func validate(structure Structure) ([]*validation.Field, error) {
 		case primitiveType:
 			err := f.validateFunc(field)
 			if err != nil {
-				if err.Error() != "break" {
+				if err.Error() != Break.Error() {
 					return nil, err
 				}
 

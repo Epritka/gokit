@@ -12,8 +12,6 @@ import (
 	"github.com/Epritka/gokit/validation"
 )
 
-type Wrapper func(error) error
-
 func NotFoundError() error {
 	return &kiterrors.DefaultError{
 		Type: kiterrors.NotFoundErrorType,
@@ -21,6 +19,7 @@ func NotFoundError() error {
 }
 
 func Wrap(err error) error {
+	// TODO: Подумать куда переместить
 	if errors.Is(err, io.EOF) {
 		return &kiterrors.DefaultError{
 			Type: kiterrors.ValidationErrorType,
